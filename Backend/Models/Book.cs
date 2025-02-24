@@ -15,7 +15,7 @@ namespace Backend.Models
         [MaxLength(1000)]
         public string? Description { get; set; }
 
-        [Column(TypeName  = "decimal(6, 2)")]
+        [Column(TypeName = "decimal(6, 2)")]
         public decimal Price { get; set; }
 
         [Range(1, 5)]

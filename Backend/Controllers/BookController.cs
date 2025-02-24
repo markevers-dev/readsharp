@@ -25,7 +25,8 @@ namespace Backend.Controllers
 
         // GET: api/book/{id}
         [HttpGet("{id}")]
-        public IActionResult GetBook(int id) {
+        public IActionResult GetBook(int id)
+        {
             var book = _context.Books.Include(b => b.Authors).Include(b => b.Genres).FirstOrDefault(b => b.Id == id);
             if (book == null)
             {

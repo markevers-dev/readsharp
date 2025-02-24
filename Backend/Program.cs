@@ -61,7 +61,7 @@ void SeedData(DBContext context)
         {
             Name = "Patrick Rothfuss",
         },
-        new Author 
+        new Author
         {
             Name = "Isaac Asimov",
         },
