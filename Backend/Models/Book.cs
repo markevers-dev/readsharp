@@ -26,6 +26,9 @@ namespace Backend.Models
         public int PublisherId { get; set; }
         public Publisher Publisher { get; set; }
 
+        [MaxLength(500)]
+        public string CoverImagePath { get; set; } = null!;
+
         public ICollection<Author> Authors { get; set; } = [];
         public ICollection<Genre> Genres { get; set; } = [];
     }
