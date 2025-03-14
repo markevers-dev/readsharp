@@ -1,25 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Backend.Models;
-using Microsoft.EntityFrameworkCore;
+using Backend.Repositories;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GenreController : ControllerBase
+    public class GenreController(IGenericRepository<Genre> genreRepository) : ControllerBase
     {
-        private readonly DBContext _context;
-
-        public GenreController(DBContext context)
-        {
-            _context = context;
-        }
+        private readonly IGenericRepository<Genre> _genreRepository = genreRepository;
 
         // GET: api/genre
         [HttpGet]
-        public IActionResult GetGenres()
+        [SwaggerOperation(Summary = "Retrieves all Genres.")]
+        public async Task<IActionResult> GetGenres()
         {
-            var genres = _context.Genres.ToList();
+            var genres = await _genreRepository.GetAllAsync();
             return Ok(genres);
         }
     }

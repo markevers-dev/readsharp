@@ -1,139 +1,58 @@
 ﻿using Backend.Models;
+using Backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BookController : ControllerBase
+    public class BookController(IGenericRepository<Book> bookRepository, IBookRepository bookImageRepository) : ControllerBase
     {
-        private readonly DBContext _context;
-
-        public BookController(DBContext context)
-        {
-            _context = context;
-        }
+        private readonly IGenericRepository<Book> _bookRepository = bookRepository;
+        private readonly IBookRepository _bookImageRepository = bookImageRepository;
 
         // GET: api/book
         [HttpGet]
-        public IActionResult GetBooks()
+        public async Task<IActionResult> GetBooks()
         {
-            var books = _context.Books.Include(b => b.Authors).Include(b => b.Genres).ToList();
-            return Ok(books);
-        }
-
-        // GET: api/book/filter?authorId=1&publisherId=2&genreId=3
-        [HttpGet("filter")]
-        public IActionResult GetBooksByFilters(int? authorId, int? publisherId, int? genreId)
-        {
-            var query = _context.Books
-                .Include(b => b.Authors)
-                .Include(b => b.Genres)
-                .Include(b => b.Publisher)
-                .AsQueryable();
-
-            if (authorId.HasValue)
-            {
-                query = query.Where(b => b.Authors.Any(a => a.Id == authorId));
-            }
-
-            if (publisherId.HasValue)
-            {
-                query = query.Where(b => b.PublisherId == publisherId);
-            }
-
-            if (genreId.HasValue)
-            {
-                query = query.Where(b => b.Genres.Any(g => g.Id == genreId));
-            }
-
-            var books = query.ToList();
-
+            var books = await _bookRepository.GetAllAsync();
             return Ok(books);
         }
 
         // GET: api/book/{id}
         [HttpGet("{id}")]
-        public IActionResult GetBook(int id)
+        public async Task<IActionResult> GetBook(int id)
         {
-            var book = _context.Books.Include(b => b.Authors).Include(b => b.Genres).FirstOrDefault(b => b.Id == id);
+            var book = await _bookRepository.GetByIdAsync(id);
             if (book == null)
-            {
                 return NotFound($"Book with ID {id} not found.");
-            }
+
             return Ok(book);
         }
 
         // POST: api/book
         [HttpPost]
-        public IActionResult CreateBook([FromBody] Book book)
+        public async Task<IActionResult> CreateBook([FromBody] Book book)
         {
             if (book == null)
-            {
                 return BadRequest("Book cannot be null.");
-            }
 
-            if (string.IsNullOrEmpty(book.Title))
-            {
-                return BadRequest("Book title is required.");
-            }
-            // TODO: Price, Rating, PublisherId IsNullOrEmpty
+            await _bookRepository.AddAsync(book);
 
-            _context.Books.Add(book);
-            _context.SaveChanges();
-
-            return CreatedAtAction(nameof(GetBooks), new { id = book.Id }, book);
+            return CreatedAtAction(nameof(GetBook), new { id = book.Id }, book);
         }
-
-        // POST: api/book/{id}/upload-cover
-        [HttpPost("{id}/upload-cover")]
-        public async Task<IActionResult> UploadCover(int id, IFormFile file)
-        {
-            if (file == null || file.Length == 0)
-                return BadRequest("Invalid file.");
-
-            var allowedMimeTypes = new List<string> { "image/png", "image/webp" };
-            var allowedExtensions = new List<string> { ".png", ".webp" };
-
-            var fileExtension = Path.GetExtension(file.FileName).ToLower();
-            if (!allowedExtensions.Contains(fileExtension) || !allowedMimeTypes.Contains(file.ContentType))
-            {
-                return BadRequest("Only PNG and WebP images are allowed.");
-            }
-
-            var book = await _context.Books.FindAsync(id);
-            if (book == null)
-                return NotFound();
-
-            var filePath = Path.Combine("wwwroot/images", $"{Guid.NewGuid()}{fileExtension}");
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            book.CoverImagePath = filePath;
-            await _context.SaveChangesAsync();
-
-            return Ok(new { ImagePath = filePath });
-        }
-
 
         // PUT: api/book/{id}
         [HttpPut("{id}")]
-        public IActionResult UpdateBook(int id, [FromBody] Book book)
+        public async Task<IActionResult> UpdateBook(int id, [FromBody] Book book)
         {
             if (book == null || id != book.Id)
-            {
                 return BadRequest("Book data is invalid or ID mismatch.");
-            }
 
-            var existingBook = _context.Books.FirstOrDefault(b => b.Id == id);
+            var existingBook = await _bookRepository.GetByIdAsync(id);
             if (existingBook == null)
-            {
                 return NotFound($"Book with ID {id} not found.");
-            }
 
             existingBook.Title = book.Title;
             existingBook.Description = book.Description;
@@ -141,71 +60,83 @@ namespace Backend.Controllers
             existingBook.Rating = book.Rating;
             existingBook.PublicationYear = book.PublicationYear;
             existingBook.PublisherId = book.PublisherId;
+            existingBook.CoverImagePath = book.CoverImagePath;
 
-            _context.Books.Update(existingBook);
-            _context.SaveChanges();
+            await _bookRepository.UpdateAsync(existingBook);
 
             return NoContent();
         }
-
-        // PUT: api/book/{id}/upload-cover
-        [HttpPut("{id}/upload-cover")]
-        public async Task<IActionResult> UpdateCover(int id, IFormFile file)
-        {
-            if (file == null || file.Length == 0)
-                return BadRequest("Invalid file.");
-
-            var allowedMimeTypes = new List<string> { "image/png", "image/webp" };
-            var allowedExtensions = new List<string> { ".png", ".webp" };
-
-            var fileExtension = Path.GetExtension(file.FileName).ToLower();
-            if (!allowedExtensions.Contains(fileExtension) || !allowedMimeTypes.Contains(file.ContentType))
-            {
-                return BadRequest("Only PNG and WebP images are allowed.");
-            }
-
-            var book = await _context.Books.FindAsync(id);
-            if (book == null)
-                return NotFound($"Book with ID {id} not found.");
-
-            if (!string.IsNullOrEmpty(book.CoverImagePath))
-            {
-                var oldFilePath = Path.Combine("wwwroot", book.CoverImagePath);
-                if (System.IO.File.Exists(oldFilePath))
-                {
-                    System.IO.File.Delete(oldFilePath);
-                }
-            }
-
-            var newFileName = $"{Guid.NewGuid()}{fileExtension}";
-            var newFilePath = Path.Combine("wwwroot/images", newFileName);
-
-            using (var stream = new FileStream(newFilePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            book.CoverImagePath = $"images/{newFileName}";
-            await _context.SaveChangesAsync();
-
-            return Ok(new { ImagePath = book.CoverImagePath });
-        }
-
 
         // DELETE: api/book/{id}
         [HttpDelete("{id}")]
-        public IActionResult DeleteBook(int id)
+        public async Task<IActionResult> DeleteBook(int id)
         {
-            var book = _context.Books.FirstOrDefault(b => b.Id == id);
-            if (book == null)
-            {
+            var existingBook = await _bookRepository.GetByIdAsync(id);
+            if (existingBook == null)
                 return NotFound($"Book with ID {id} not found.");
-            }
 
-            _context.Books.Remove(book);
-            _context.SaveChanges();
+            await _bookRepository.DeleteAsync(id);
 
             return NoContent();
+        }
+
+        // GET: api/book/{id}/cover
+        [HttpGet("{id}/cover")]
+        public async Task<IActionResult> GetCoverImage(int id)
+        {
+            try
+            {
+                var (imageBytes, contentType) = await _bookImageRepository.GetCoverImageAsync(id);
+
+                if (imageBytes == null || string.IsNullOrEmpty(contentType))
+                    return NotFound($"No cover image found for book ID {id}.");
+
+                Random random = new();
+                int delay = random.Next(200, 1000);
+                Thread.Sleep(delay);
+
+                return File(imageBytes, contentType);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // PUT: api/book/cover/{existingFileName}
+        [HttpPut("cover/{existingFileName}")]
+        public async Task<IActionResult> UpdateCover(string existingFileName, IFormFile file)
+        {
+            try
+            {
+                var imagePath = await _bookImageRepository.UpdateCoverImageAsync(existingFileName, file);
+                return Ok(new { ImagePath = imagePath });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // POST: api/book/cover
+        [HttpPost("cover")]
+        public async Task<IActionResult> UploadCover(IFormFile file)
+        {
+            try
+            {
+                var imagePath = await _bookImageRepository.UploadCoverImageAsync(file);
+                return Ok(new { ImagePath = imagePath });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        private (Boolean, string) IsBookValid(Book book)
+        {
+            return (true, "yippie");
         }
     }
 }

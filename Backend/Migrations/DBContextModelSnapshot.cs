@@ -62,9 +62,17 @@ namespace Backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CoverImagePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("PageCount")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(6, 2)");
@@ -86,6 +94,9 @@ namespace Backend.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("PublisherId");
+
+                    b.HasIndex("Title")
+                        .IsUnique();
 
                     b.ToTable("Books");
                 });

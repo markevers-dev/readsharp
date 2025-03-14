@@ -1,25 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Backend.Models;
-using Microsoft.EntityFrameworkCore;
+using Backend.Repositories;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthorController : ControllerBase
+    public class AuthorController(IGenericRepository<Author> authorRepository) : ControllerBase
     {
-        private readonly DBContext _context;
-
-        public AuthorController(DBContext context)
-        {
-            _context = context;
-        }
+        private readonly IGenericRepository<Author> _authorRepository = authorRepository;
 
         // GET: api/author
         [HttpGet]
-        public IActionResult GetAuthors()
+        [SwaggerOperation(Summary = "Retrieves all Authors.")]
+        public async Task<IActionResult> GetAuthors()
         {
-            var authors = _context.Authors.ToList();
+            var authors = await _authorRepository.GetAllAsync();
             return Ok(authors);
         }
     }

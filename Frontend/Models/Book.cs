@@ -8,6 +8,6 @@
         public decimal Price { get; set; }
         public int Rating { get; set; }
         public int? PublicationYear { get; set; }
-        public Publisher Publisher { get; set; }
+        //public Publisher Publisher { get; set; }
     }
 }

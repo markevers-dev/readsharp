@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Models
 {
+    [Index(nameof(Title), IsUnique = true)]
     public class Book
     {
         public int Id { get; set; }
 
-        [MaxLength(255)]
+        [MaxLength(255), ]
         public string Title { get; set; } = null!;
 
         [MaxLength(1000)]
@@ -17,6 +17,8 @@ namespace Backend.Models
 
         [Column(TypeName = "decimal(6, 2)")]
         public decimal Price { get; set; }
+
+        public int PageCount { get; set; }
 
         [Range(1, 5)]
         public int Rating { get; set; }
