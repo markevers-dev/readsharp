@@ -1,24 +1,39 @@
-﻿using System;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
 namespace Frontend.Helpers
 {
     public class RelayCommand : ICommand
     {
-        private readonly Action _execute;
-        private readonly Func<bool> _canExecute;
+        private readonly Action<object> _execute;
+        private readonly Predicate<object> _canExecute;
 
-        public RelayCommand(Action execute, Func<bool>? canExecute = null)
+        // Constructor for commands that accept an object parameter.
+        public RelayCommand(Action<object> execute, Predicate<object> canExecute)
         {
             _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute ?? (() => true);
+            _canExecute = canExecute;
         }
 
-        public bool CanExecute(object? parameter) => _canExecute();
-        public void Execute(object? parameter) => _execute();
+        // Overload for commands that do not require a parameter.
+        public RelayCommand(Action execute, Predicate<object> canExecute) : this(o => execute(), canExecute) { }
 
-        public event EventHandler? CanExecuteChanged;
-        public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        // Overload for commands that do not require a predicate.
+        public RelayCommand(Action<object> execute) : this(execute, o => true) { }
+
+        // Overload for commands that do not require a predicate.
+        public RelayCommand(Action execute) : this(o => execute()) { }
+
+        public bool CanExecute(object parameter) =>
+            _canExecute == null ? true : _canExecute(parameter);
+
+        public void Execute(object parameter) =>
+            _execute(parameter);
+
+        public event EventHandler CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
+        }
     }
 }
 

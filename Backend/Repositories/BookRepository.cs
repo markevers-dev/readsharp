@@ -1,14 +1,101 @@
 ﻿using Backend.Models;
+using Backend.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Repositories
 {
-    public class BookRepository(DBContext context, IWebHostEnvironment environment) : GenericRepository<Book>(context), IBookRepository
+    public class BookRepository : GenericRepository<Book>, IBookRepository
     {
-        private readonly DBContext _context = context;
-        private readonly IWebHostEnvironment _environment = environment;
+        private readonly DBContext _context;
+        private readonly IWebHostEnvironment _environment;
         private readonly List<string> allowedExtensions = [".png", ".webp", ".jpg"];
         private readonly string extensionError = "Only PNG, JPG and WebP images are allowed.";
         private readonly string imageFolder = "BookCoverImages";
+
+        public BookRepository(DBContext context, IWebHostEnvironment environment)
+           : base(context)
+        {
+            _context = context;
+            _environment = environment;
+        }
+
+        public async Task<List<BookDTO>> GetBooksWithRelationsAsync()
+        {
+            return await _context.Books
+    .Include(b => b.Publisher)
+    .Include(b => b.Authors)
+    .Include(b => b.Genres)
+    .Select(b => new BookDTO
+    {
+        Id = b.Id,
+        Title = b.Title,
+        Description = b.Description,
+        Price = b.Price,
+        PageCount = b.PageCount,
+        Rating = b.Rating,
+        PublicationYear = b.PublicationYear,
+        CoverImagePath = b.CoverImagePath,
+
+        Publisher = new PublisherDTO
+        {
+            Id = b.Publisher.Id,
+            Name = b.Publisher.Name,
+            Address = b.Publisher.Address
+        },
+
+        Authors = b.Authors.Select(a => new AuthorDTO
+        {
+            Id = a.Id,
+            Name = a.Name
+        }).ToList(),
+
+        Genres = b.Genres.Select(g => new GenreDTO
+        {
+            Id = g.Id,
+            Name = g.Name
+        }).ToList()
+
+    }).ToListAsync();
+        }
+
+        public async Task<BookDTO?> GetBookWithRelationsAsync(int id)
+        {
+            return await _context.Books
+        .Include(b => b.Publisher)
+        .Include(b => b.Authors)
+        .Include(b => b.Genres)
+        .Where(b => b.Id == id)
+        .Select(b => new BookDTO
+        {
+            Id = b.Id,
+            Title = b.Title,
+            Description = b.Description,
+            Price = b.Price,
+            PageCount = b.PageCount,
+            Rating = b.Rating,
+            PublicationYear = b.PublicationYear,
+            CoverImagePath = b.CoverImagePath,
+
+            Publisher = new PublisherDTO
+            {
+                Id = b.Publisher.Id,
+                Name = b.Publisher.Name
+            },
+
+            Authors = b.Authors.Select(a => new AuthorDTO
+            {
+                Id = a.Id,
+                Name = a.Name
+            }).ToList(),
+
+            Genres = b.Genres.Select(g => new GenreDTO
+            {
+                Id = g.Id,
+                Name = g.Name
+            }).ToList()
+        })
+        .FirstOrDefaultAsync();
+        }
 
         public async Task<(byte[]? ImageData, string? ContentType)> GetCoverImageAsync(int bookId)
         {

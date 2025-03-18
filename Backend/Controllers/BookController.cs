@@ -1,4 +1,5 @@
-﻿using Backend.Models;
+﻿using Backend.Data;
+using Backend.Models;
 using Backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -9,26 +10,27 @@ namespace Backend.Controllers
     [ApiController]
     public class BookController(IGenericRepository<Book> bookRepository, IBookRepository bookImageRepository) : ControllerBase
     {
-        private readonly IGenericRepository<Book> _bookRepository = bookRepository;
-        private readonly IBookRepository _bookImageRepository = bookImageRepository;
+        private readonly IGenericRepository<Book> _genericBookRepository = bookRepository;
+        private readonly IBookRepository _bookRepository = bookImageRepository;
 
         // GET: api/book
         [HttpGet]
         public async Task<IActionResult> GetBooks()
         {
-            var books = await _bookRepository.GetAllAsync();
-            return Ok(books);
+            List<BookDTO> booksWithRelations = await _bookRepository.GetBooksWithRelationsAsync();
+            return Ok(booksWithRelations);
         }
 
         // GET: api/book/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBook(int id)
         {
-            var book = await _bookRepository.GetByIdAsync(id);
-            if (book == null)
+            BookDTO bookWithRelations = await _bookRepository.GetBookWithRelationsAsync(id);
+
+            if (bookWithRelations == null)
                 return NotFound($"Book with ID {id} not found.");
 
-            return Ok(book);
+            return Ok(bookWithRelations);
         }
 
         // POST: api/book
@@ -38,7 +40,7 @@ namespace Backend.Controllers
             if (book == null)
                 return BadRequest("Book cannot be null.");
 
-            await _bookRepository.AddAsync(book);
+            await _genericBookRepository.AddAsync(book);
 
             return CreatedAtAction(nameof(GetBook), new { id = book.Id }, book);
         }
@@ -50,7 +52,7 @@ namespace Backend.Controllers
             if (book == null || id != book.Id)
                 return BadRequest("Book data is invalid or ID mismatch.");
 
-            var existingBook = await _bookRepository.GetByIdAsync(id);
+            var existingBook = await _genericBookRepository.GetByIdAsync(id);
             if (existingBook == null)
                 return NotFound($"Book with ID {id} not found.");
 
@@ -62,7 +64,7 @@ namespace Backend.Controllers
             existingBook.PublisherId = book.PublisherId;
             existingBook.CoverImagePath = book.CoverImagePath;
 
-            await _bookRepository.UpdateAsync(existingBook);
+            await _genericBookRepository.UpdateAsync(existingBook);
 
             return NoContent();
         }
@@ -71,11 +73,11 @@ namespace Backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(int id)
         {
-            var existingBook = await _bookRepository.GetByIdAsync(id);
+            var existingBook = await _genericBookRepository.GetByIdAsync(id);
             if (existingBook == null)
                 return NotFound($"Book with ID {id} not found.");
 
-            await _bookRepository.DeleteAsync(id);
+            await _genericBookRepository.DeleteAsync(id);
 
             return NoContent();
         }
@@ -86,14 +88,14 @@ namespace Backend.Controllers
         {
             try
             {
-                var (imageBytes, contentType) = await _bookImageRepository.GetCoverImageAsync(id);
+                var (imageBytes, contentType) = await _bookRepository.GetCoverImageAsync(id);
 
                 if (imageBytes == null || string.IsNullOrEmpty(contentType))
                     return NotFound($"No cover image found for book ID {id}.");
 
                 Random random = new();
                 int delay = random.Next(200, 1000);
-                Thread.Sleep(delay);
+                await Task.Delay(delay);
 
                 return File(imageBytes, contentType);
             }
@@ -109,7 +111,7 @@ namespace Backend.Controllers
         {
             try
             {
-                var imagePath = await _bookImageRepository.UpdateCoverImageAsync(existingFileName, file);
+                var imagePath = await _bookRepository.UpdateCoverImageAsync(existingFileName, file);
                 return Ok(new { ImagePath = imagePath });
             }
             catch (Exception ex)
@@ -124,7 +126,7 @@ namespace Backend.Controllers
         {
             try
             {
-                var imagePath = await _bookImageRepository.UploadCoverImageAsync(file);
+                var imagePath = await _bookRepository.UploadCoverImageAsync(file);
                 return Ok(new { ImagePath = imagePath });
             }
             catch (Exception ex)

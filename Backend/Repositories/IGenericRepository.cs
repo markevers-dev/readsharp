@@ -2,6 +2,7 @@
 {
     public interface IGenericRepository<T> where T : class
     {
+        IQueryable<T> GetQueryableAsync();
         Task<List<T>> GetAllAsync();
         Task<T> GetByIdAsync(int id);
         Task AddAsync(T entity);

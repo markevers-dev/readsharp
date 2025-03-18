@@ -9,7 +9,7 @@ namespace Backend.Models
     {
         public int Id { get; set; }
 
-        [MaxLength(255), ]
+        [MaxLength(255),]
         public string Title { get; set; } = null!;
 
         [MaxLength(1000)]

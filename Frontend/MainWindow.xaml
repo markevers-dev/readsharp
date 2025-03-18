@@ -5,8 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:local="clr-namespace:Frontend"
+        xmlns:vm="clr-namespace:Frontend.ViewModels"
         mc:Ignorable="d"
         Title="Read#" Height="450" Width="800" Background="#262626">
+
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+    </Window.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -17,27 +27,47 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
+        <local:ErrorPopup Grid.ColumnSpan="2" Visibility="{Binding IsErrorVisible, Converter={StaticResource BoolToVisibility}}"
+                          DataContext="{Binding}" VerticalAlignment="Center" Margin="10" HorizontalAlignment="Center" Panel.ZIndex="2"/>
+
         <StackPanel Grid.Column="0" Margin="10">
-            <Border CornerRadius="5" Height="30" Background="White" Padding="5" Margin="0,0,0,10">
-                <ComboBox x:Name="Genres" Background="Transparent" BorderThickness="0" FontFamily="Bahnschrift" FontWeight="Bold">
-                    <ComboBoxItem IsEnabled="False" IsSelected="True">Select a genre...</ComboBoxItem>
-                    <ComboBoxItem>ComboBox Item #1</ComboBoxItem>
-                    <ComboBoxItem>ComboBox Item #2</ComboBoxItem>
-                    <ComboBoxItem>ComboBox Item #3</ComboBoxItem>
+            <StackPanel>
+                <Label Content="Select Genres:" Foreground="White" FontWeight="Bold" FontFamily="Bahnschrift"/>
+                <ComboBox x:Name="Genres" 
+                          Margin="0,0,0,5"
+                          ItemsSource="{Binding Genres}" 
+                          DisplayMemberPath="Name"
+                          Background="White" BorderThickness="0" 
+                          FontFamily="Bahnschrift" FontWeight="Bold"
+                          SelectedItem="{Binding SelectedGenre, Mode=TwoWay}">
                 </ComboBox>
-            </Border>
+            </StackPanel>
 
-            <Border CornerRadius="5" Height="30" Background="White" Padding="5" Margin="0,0,0,10">
-                <ComboBox x:Name="Publishers" Background="Transparent" BorderThickness="0" FontFamily="Bahnschrift" FontWeight="Bold">
-                    <ComboBoxItem IsEnabled="False" IsSelected="True">Select a publisher...</ComboBoxItem>
-                    <ComboBoxItem>ComboBox Item #1</ComboBoxItem>
-                    <ComboBoxItem>ComboBox Item #2</ComboBoxItem>
-                    <ComboBoxItem>ComboBox Item #3</ComboBoxItem>
+            <StackPanel>
+                <Label Content="Select Publisher:" Foreground="White" FontWeight="Bold" FontFamily="Bahnschrift"/>
+                <ComboBox x:Name="Publishers" 
+                              Margin="0,0,0,10"
+                          ItemsSource="{Binding Publishers}" 
+                          DisplayMemberPath="Name"
+                          Background="White" BorderThickness="0" 
+                          FontFamily="Bahnschrift" FontWeight="Bold"
+                          SelectedItem="{Binding SelectedPublisher, Mode=TwoWay}">
                 </ComboBox>
-            </Border>
-
+            </StackPanel>
             <Border Height="30" Padding="5" Grid.Column="1" Background="#76E8EC" CornerRadius="5" Margin="0,0,0,10">
-                <Button Content="Apply Filters ✔️" Background="Transparent" BorderThickness="0" FontFamily="Bahnschrift" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Button Content="Apply Filters ✔️" 
+                    Background="Transparent" BorderThickness="0"
+                    FontFamily="Bahnschrift" FontWeight="Bold"
+                    Command="{Binding ApplyFiltersCommand}"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+
+            <Border Height="30" Padding="5" Grid.Column="1" Background="#FFA9A9" CornerRadius="5" Margin="0,0,0,10">
+                <Button Content="Remove Filters ✖️" 
+                    Background="Transparent" BorderThickness="0"
+                    FontFamily="Bahnschrift" FontWeight="Bold"
+                    Command="{Binding ResetFiltersCommand}"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"/>   
             </Border>
         </StackPanel>
 
@@ -58,67 +88,62 @@
                 </Grid.ColumnDefinitions>
 
                 <Border CornerRadius="5" Grid.Column="0" Height="30" Background="White" Padding="5" Margin="0,0,5,10">
-                    <TextBox Background="Transparent" BorderThickness="0" FontFamily="Bahnschrift" FontWeight="Bold"/>
+                    <TextBox Background="Transparent" BorderThickness="0" FontFamily="Bahnschrift" FontWeight="Bold" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
+                        <TextBox.InputBindings>
+                            <KeyBinding 
+                                  Key="Enter" 
+                                  Command="{Binding ApplyFiltersCommand}" />
+                        </TextBox.InputBindings>
+                    </TextBox>
                 </Border>
 
-                <Border Height="30" Padding="5" Grid.Column="1" Background="#76E8EC" CornerRadius="5" Margin="0,0,10,10">
-                    <Button Content="🔍" Background="Transparent" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Border Height="30"  Grid.Column="1" Background="#76E8EC" CornerRadius="5" Margin="0,0,10,10">
+                    <Button Content="🔍" Padding="5" Background="Transparent" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding ApplyFiltersCommand}"/>
                 </Border>
 
-                <Border Height="30" Padding="5" Grid.Column="2" Background="#76E8EC" CornerRadius="5" Margin="0,0,0,10">
-                    <ToggleButton x:Name="btnToggleSortMenu" Content="🔃" Background="Transparent" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Border Height="30"  Grid.Column="2" Background="#76E8EC" CornerRadius="5" Margin="0,0,10,10">
+                    <Button Content="♻️" Padding="5" Background="Transparent" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding ReloadBooksCommand}"/>
                 </Border>
-
-                <Popup IsOpen="{Binding IsChecked, ElementName=btnToggleSortMenu}"
-           PlacementTarget="{Binding ElementName=btnToggleSortMenu}"
-           Placement="Left" StaysOpen="False" AllowsTransparency="True">
-                    <Border Background="White" CornerRadius="5" Padding="10"
-                BorderBrush="Black" BorderThickness="1" Width="250">
-                        <StackPanel>
-                            <TextBlock Text="Select Option 1:" Margin="0,5,0,2"/>
-                            <ComboBox Width="200">
-                                <ComboBoxItem>Option 1</ComboBoxItem>
-                                <ComboBoxItem>Option 2</ComboBoxItem>
-                                <ComboBoxItem>Option 3</ComboBoxItem>
-                            </ComboBox>
-
-                            <TextBlock Text="Select Option 2:" Margin="0,10,0,2"/>
-                            <ComboBox Width="200">
-                                <ComboBoxItem>Choice A</ComboBoxItem>
-                                <ComboBoxItem>Choice B</ComboBoxItem>
-                                <ComboBoxItem>Choice C</ComboBoxItem>
-                            </ComboBox>
-                        </StackPanel>
-                    </Border>
-                </Popup>
             </Grid>
 
-            <Border Height="Auto" Grid.Row="1" CornerRadius="5" Padding="5" Background="#424242">
-                <ListBox Background="Transparent" BorderThickness="0">
-                    <ListBox.Template>
-                        <ControlTemplate>
-                            <Grid>
-                                <ScrollViewer>
-                                    <ItemsPresenter/>
-                                </ScrollViewer>
+            <Grid Grid.Row="1">
+                <Border Height="Auto" CornerRadius="5" Padding="5" Background="#424242">
+                    <ListBox x:Name="BookList" ItemsSource="{Binding Books}" Background="Transparent" BorderThickness="0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
 
-                                <Border Background="#262626" Height="30" VerticalAlignment="Bottom" CornerRadius="5">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <Border Padding="5" Grid.Column="1" Background="#76E8EC" CornerRadius="5" Margin="0,2,0,2">
-                                            <Button Content="◀" Background="Transparent" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </Border>
-                                        <TextBlock Text="{Binding CurrentPage}" Foreground="White" FontWeight="Bold" Margin="10"/>
-                                        <Border Padding="5" Grid.Column="1" Background="#76E8EC" CornerRadius="5" Margin="0,2,0,2">
-                                            <Button Content="▶" Background="Transparent" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </Border>
+                                    <Image Source="{Binding CoverImage}" Width="100" Height="125" Margin="5" Grid.Column="0" VerticalAlignment="Top"/>
+
+                                    <StackPanel Grid.Column="1" Margin="5"
+                                        HorizontalAlignment="Left"
+                                        MaxWidth="500">
+                                        <TextBlock Text="{Binding Title}" Foreground="White" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding Description}" Foreground="LightGray" TextWrapping="Wrap"/>
+                                        <TextBlock Text="{Binding GenresText, StringFormat='Genre(s): {0}'}" Foreground="LightGray"/>
+                                        <TextBlock Text="{Binding AuthorsText, StringFormat='Written by: {0}'}" Foreground="LightGray"/>
+                                        <TextBlock Text="{Binding PageCount, StringFormat='Page count: {0}'}" Foreground="LightGray"/>
+                                        <TextBlock Text="{Binding Rating, StringFormat='Rating: {0}'}" Foreground="LightGray"/>
+                                        <TextBlock Text="{Binding PublisherText, StringFormat='Published by: {0}'}" Foreground="LightGray"/>
+                                        <TextBlock Text="{Binding PublicationYear, StringFormat='Publication year: {0}'}" Foreground="LightGray"/>
+                                        <TextBlock Text="{Binding Price, StringFormat='Price: ${0}'}" Foreground="LightGray"/>
                                     </StackPanel>
-                                </Border>
-                            </Grid>
-                        </ControlTemplate>
-                    </ListBox.Template>
-                </ListBox>
-            </Border>
-            
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Border>
+
+                <Border Background="Transparent" VerticalAlignment="Top" Padding="5" CornerRadius="5"
+                Visibility="{Binding IsLoadingCovers, Converter={StaticResource BoolToVisibility}}">
+                    <mah:MetroProgressBar Value="{Binding CoversLoaded}" 
+                            Maximum="{Binding Books.Count}" Height="25" Foreground="#76E8EC"/>
+                </Border>
+            </Grid>
         </Grid>
     </Grid>
 </Window>

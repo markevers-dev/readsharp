@@ -13,6 +13,10 @@ namespace Backend.Repositories
             _dbSet = _context.Set<T>();
         }
 
+        public IQueryable<T> GetQueryableAsync()
+        {
+            return _dbSet.AsQueryable();
+        }
         public async Task<List<T>> GetAllAsync() => await _dbSet.ToListAsync();
 
         public async Task<T> GetByIdAsync(int id) => await _dbSet.FindAsync(id);
