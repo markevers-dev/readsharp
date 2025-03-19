@@ -46,6 +46,11 @@ namespace Frontend.Services
         {
             return await _httpClient.GetFromJsonAsync<List<Publisher>>("publisher") ?? [];
         }
+
+        public async Task DeleteBook(int bookId)
+        {
+            await _httpClient.DeleteAsync($"book/{bookId}");
+        }
     }
 }
 

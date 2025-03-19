@@ -115,6 +115,7 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
 
                                     <Image Source="{Binding CoverImage}" Width="100" Height="125" Margin="5" Grid.Column="0" VerticalAlignment="Top"/>
@@ -132,6 +133,13 @@
                                         <TextBlock Text="{Binding PublicationYear, StringFormat='Publication year: {0}'}" Foreground="LightGray"/>
                                         <TextBlock Text="{Binding Price, StringFormat='Price: ${0}'}" Foreground="LightGray"/>
                                     </StackPanel>
+
+                                    <Border Grid.Column="2" Background="#FFA9A9" CornerRadius="5" Margin="5" VerticalAlignment="Top">
+                                        <Button Content="❌" Padding="5" Background="Transparent" Foreground="White" BorderThickness="0"
+                            Command="{Binding DataContext.DeleteBookCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                            CommandParameter="{Binding Id}"
+                            ToolTip="Delete this book" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                    </Border>
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>

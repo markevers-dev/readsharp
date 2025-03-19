@@ -128,6 +128,10 @@ static void SeedData(DBContext context)
     new Author
     {
         Name = "R.J. Barker"
+    },
+    new Author
+    {
+        Name = "Dennis E. Taylor"
     });
 
     context.SaveChanges();
@@ -155,9 +159,9 @@ static void SeedData(DBContext context)
         Rating = 5,
         PageCount = 333,
         PublicationYear = 1997,
-        PublisherId = context.Publishers.FirstOrDefault(p => p.Name == "HarperCollins").Id,
-        Authors = new List<Author> { context.Authors.FirstOrDefault(a => a.Name == "J.K. Rowling") },
-        Genres = new List<Genre> { context.Genres.FirstOrDefault(g => g.Name == "Fantasy") },
+        PublisherId = context.Publishers.First(p => p.Name == "HarperCollins").Id,
+        Authors = new List<Author> { context.Authors.First(a => a.Name == "J.K. Rowling") },
+        Genres = new List<Genre> { context.Genres.First(g => g.Name == "Fantasy") },
         CoverImagePath = "42844155.jpg"
     },
     new Book
@@ -168,9 +172,9 @@ static void SeedData(DBContext context)
         Rating = 4,
         PageCount = 864,
         PublicationYear = 1996,
-        PublisherId = context.Publishers.FirstOrDefault(p => p.Name == "Penguin Random House").Id,
-        Authors = new List<Author> { context.Authors.FirstOrDefault(a => a.Name == "George R.R. Martin") },
-        Genres = new List<Genre> { context.Genres.FirstOrDefault(g => g.Name == "Fantasy") },
+        PublisherId = context.Publishers.First(p => p.Name == "Penguin Random House").Id,
+        Authors = new List<Author> { context.Authors.First(a => a.Name == "George R.R. Martin") },
+        Genres = new List<Genre> { context.Genres.First(g => g.Name == "Fantasy") },
         CoverImagePath = "822993.jpg"
     },
     new Book
@@ -181,9 +185,9 @@ static void SeedData(DBContext context)
         Rating = 4,
         PageCount = 512,
         PublicationYear = 1994,
-        PublisherId = context.Publishers.FirstOrDefault(p => p.Name == "HarperCollins").Id,
-        Authors = new List<Author> { context.Authors.FirstOrDefault(a => a.Name == "Bernard Cornwell") },
-        Genres = new List<Genre> { context.Genres.FirstOrDefault(g => g.Name == "Historical Fiction") },
+        PublisherId = context.Publishers.First(p => p.Name == "HarperCollins").Id,
+        Authors = new List<Author> { context.Authors.First(a => a.Name == "Bernard Cornwell") },
+        Genres = new List<Genre> { context.Genres.First(g => g.Name == "Historical Fiction") },
         CoverImagePath = "30171946.jpg"
     },
     new Book
@@ -194,9 +198,9 @@ static void SeedData(DBContext context)
         Rating = 5,
         PageCount = 752,
         PublicationYear = 2009,
-        PublisherId = context.Publishers.FirstOrDefault(p => p.Name == "HarperCollins").Id,
-        Authors = new List<Author> { context.Authors.FirstOrDefault(a => a.Name == "Patrick Rothfuss") },
-        Genres = new List<Genre> { context.Genres.FirstOrDefault(g => g.Name == "Fantasy") },
+        PublisherId = context.Publishers.First(p => p.Name == "HarperCollins").Id,
+        Authors = new List<Author> { context.Authors.First(a => a.Name == "Patrick Rothfuss") },
+        Genres = new List<Genre> { context.Genres.First(g => g.Name == "Fantasy") },
         CoverImagePath = "34347493.jpg"
     },
     new Book
@@ -207,9 +211,9 @@ static void SeedData(DBContext context)
         Rating = 4,
         PageCount = 272,
         PublicationYear = 1972,
-        PublisherId = context.Publishers.FirstOrDefault(p => p.Name == "Penguin Random House").Id,
-        Authors = new List<Author> { context.Authors.FirstOrDefault(a => a.Name == "Isaac Asimov") },
-        Genres = new List<Genre> { context.Genres.FirstOrDefault(g => g.Name == "Science Fiction") },
+        PublisherId = context.Publishers.First(p => p.Name == "Penguin Random House").Id,
+        Authors = new List<Author> { context.Authors.First(a => a.Name == "Isaac Asimov") },
+        Genres = new List<Genre> { context.Genres.First(g => g.Name == "Science Fiction") },
         CoverImagePath = "17736403.jpg"
     },
     new Book
@@ -220,9 +224,9 @@ static void SeedData(DBContext context)
         Rating = 4,
         PageCount = 602,
         PublicationYear = 2019,
-        PublisherId = context.Publishers.FirstOrDefault(p => p.Name == "Penguin Random House").Id,
-        Authors = new List<Author> { context.Authors.FirstOrDefault(a => a.Name == "Adrian Tchaikovsky") },
-        Genres = new List<Genre> { context.Genres.FirstOrDefault(g => g.Name == "Science Fiction") },
+        PublisherId = context.Publishers.First(p => p.Name == "Penguin Random House").Id,
+        Authors = new List<Author> { context.Authors.First(a => a.Name == "Adrian Tchaikovsky") },
+        Genres = new List<Genre> { context.Genres.First(g => g.Name == "Science Fiction") },
         CoverImagePath = "40803025.jpg"
     },
     new Book
@@ -233,9 +237,9 @@ static void SeedData(DBContext context)
         Rating = 4,
         PageCount = 396,
         PublicationYear = 2024,
-        PublisherId = context.Publishers.FirstOrDefault(p => p.Name == "Penguin Random House").Id,
-        Authors = new List<Author> { context.Authors.FirstOrDefault(a => a.Name == "Adrian Tchaikovsky") },
-        Genres = new List<Genre> { context.Genres.FirstOrDefault(g => g.Name == "Science Fiction") },
+        PublisherId = context.Publishers.First(p => p.Name == "Penguin Random House").Id,
+        Authors = new List<Author> { context.Authors.First(a => a.Name == "Adrian Tchaikovsky") },
+        Genres = new List<Genre> { context.Genres.First(g => g.Name == "Science Fiction") },
         CoverImagePath = "195443798.jpg"
     },
     new Book
@@ -246,9 +250,9 @@ static void SeedData(DBContext context)
         Rating = 4,
         PageCount = 658,
         PublicationYear = 1965,
-        PublisherId = context.Publishers.FirstOrDefault(p => p.Name == "Penguin Random House").Id,
-        Authors = new List<Author> { context.Authors.FirstOrDefault(a => a.Name == "Frank Herbert") },
-        Genres = new List<Genre> { context.Genres.FirstOrDefault(g => g.Name == "Science Fiction") },
+        PublisherId = context.Publishers.First(p => p.Name == "Penguin Random House").Id,
+        Authors = new List<Author> { context.Authors.First(a => a.Name == "Frank Herbert") },
+        Genres = new List<Genre> { context.Genres.First(g => g.Name == "Science Fiction") },
         CoverImagePath = "44767458.jpg"
     },
     new Book
@@ -259,9 +263,9 @@ static void SeedData(DBContext context)
         Rating = 4,
         PageCount = 308,
         PublicationYear = 2022,
-        PublisherId = context.Publishers.FirstOrDefault(p => p.Name == "HarperCollins").Id,
-        Authors = new List<Author> { context.Authors.FirstOrDefault(a => a.Name == "Travis Baldree") },
-        Genres = new List<Genre> { context.Genres.FirstOrDefault(g => g.Name == "Fantasy") },
+        PublisherId = context.Publishers.First(p => p.Name == "HarperCollins").Id,
+        Authors = new List<Author> { context.Authors.First(a => a.Name == "Travis Baldree") },
+        Genres = new List<Genre> { context.Genres.First(g => g.Name == "Fantasy") },
         CoverImagePath = "61457585.jpg"
     },
     new Book
@@ -272,9 +276,9 @@ static void SeedData(DBContext context)
         Rating = 3,
         PageCount = 336,
         PublicationYear = 1969,
-        PublisherId = context.Publishers.FirstOrDefault(p => p.Name == "Penguin Random House").Id,
-        Authors = new List<Author> { context.Authors.FirstOrDefault(a => a.Name == "Frank Herbert") },
-        Genres = new List<Genre> { context.Genres.FirstOrDefault(g => g.Name == "Science Fiction") },
+        PublisherId = context.Publishers.First(p => p.Name == "Penguin Random House").Id,
+        Authors = new List<Author> { context.Authors.First(a => a.Name == "Frank Herbert") },
+        Genres = new List<Genre> { context.Genres.First(g => g.Name == "Science Fiction") },
         CoverImagePath = "61403877.jpg"
     },
     new Book
@@ -285,9 +289,9 @@ static void SeedData(DBContext context)
         Rating = 4,
         PageCount = 512,
         PublicationYear = 2019,
-        PublisherId = context.Publishers.FirstOrDefault(p => p.Name == "Penguin Random House").Id,
-        Authors = new List<Author> { context.Authors.FirstOrDefault(a => a.Name == "R.J. Barker") },
-        Genres = new List<Genre> { context.Genres.FirstOrDefault(g => g.Name == "Fantasy") },
+        PublisherId = context.Publishers.First(p => p.Name == "Penguin Random House").Id,
+        Authors = new List<Author> { context.Authors.First(a => a.Name == "R.J. Barker") },
+        Genres = new List<Genre> { context.Genres.First(g => g.Name == "Fantasy") },
         CoverImagePath = "43521682.jpg"
     },
     new Book
@@ -298,9 +302,9 @@ static void SeedData(DBContext context)
         Rating = 4,
         PageCount = 304,
         PublicationYear = 2024,
-        PublisherId = context.Publishers.FirstOrDefault(p => p.Name == "Penguin Random House").Id,
-        Authors = new List<Author> { context.Authors.FirstOrDefault(a => a.Name == "Ferdia Lennon") },
-        Genres = new List<Genre> { context.Genres.FirstOrDefault(g => g.Name == "Historical Fiction") },
+        PublisherId = context.Publishers.First(p => p.Name == "Penguin Random House").Id,
+        Authors = new List<Author> { context.Authors.First(a => a.Name == "Ferdia Lennon") },
+        Genres = new List<Genre> { context.Genres.First(g => g.Name == "Historical Fiction") },
         CoverImagePath = "127278133.jpg"
     },
     new Book
@@ -311,9 +315,9 @@ static void SeedData(DBContext context)
         Rating = 4,
         PageCount = 465,
         PublicationYear = 1973,
-        PublisherId = context.Publishers.FirstOrDefault(p => p.Name == "HarperCollins").Id,
-        Authors = new List<Author> { context.Authors.FirstOrDefault(a => a.Name == "William Goldman") },
-        Genres = new List<Genre> { context.Genres.FirstOrDefault(g => g.Name == "Fantasy") },
+        PublisherId = context.Publishers.First(p => p.Name == "HarperCollins").Id,
+        Authors = new List<Author> { context.Authors.First(a => a.Name == "William Goldman") },
+        Genres = new List<Genre> { context.Genres.First(g => g.Name == "Fantasy") },
         CoverImagePath = "9525672.jpg"
     },
     new Book
@@ -324,10 +328,23 @@ static void SeedData(DBContext context)
         Rating = 4,
         PageCount = 480,
         PublicationYear = 2021,
-        PublisherId = context.Publishers.FirstOrDefault(p => p.Name == "HarperCollins").Id,
-        Authors = new List<Author> { context.Authors.FirstOrDefault(a => a.Name == "John Gwynne") },
-        Genres = new List<Genre> { context.Genres.FirstOrDefault(g => g.Name == "Fantasy") },
+        PublisherId = context.Publishers.First(p => p.Name == "HarperCollins").Id,
+        Authors = new List<Author> { context.Authors.First(a => a.Name == "John Gwynne") },
+        Genres = new List<Genre> { context.Genres.First(g => g.Name == "Fantasy") },
         CoverImagePath = "52694527.jpg"
+    },
+    new Book
+    {
+        Title = "We Are Legion (We Are Bob)",
+        Description = "Bob Johansson has just sold his software company and is looking forward to a life of leisure. There are places to go, books to read, and movies to watch. So it's a little unfair when he gets himself killed crossing the street. ",
+        Price = 12.99m,
+        Rating = 4,
+        PageCount = 383,
+        PublicationYear = 2016,
+        PublisherId = context.Publishers.First(p => p.Name == "HarperCollins").Id,
+        Authors = new List<Author> { context.Authors.First(a => a.Name == "Dennis E. Taylor") },
+        Genres = new List<Genre> { context.Genres.First(g => g.Name == "Science Fiction") },
+        CoverImagePath = "32109569.jpg"
     });
 
     context.SaveChanges();

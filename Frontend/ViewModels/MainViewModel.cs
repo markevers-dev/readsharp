@@ -39,13 +39,6 @@ namespace Frontend.ViewModels
             set { _searchText = value; OnPropertyChanged(); }
         }
 
-        private double _booksLoadedProgress;
-        public double BooksLoadedProgress
-        {
-            get => _booksLoadedProgress;
-            set { _booksLoadedProgress = value; OnPropertyChanged(); }
-        }
-
         private int _coversLoaded;
         public int CoversLoaded
         {
@@ -80,11 +73,14 @@ namespace Frontend.ViewModels
 
         public ICommand ReloadBooksCommand { get; }
 
+        public ICommand DeleteBookCommand { get; }
+
         public MainViewModel()
         {
             ApplyFiltersCommand = new RelayCommand(async () => await ApplyFilters());
             ResetFiltersCommand = new RelayCommand(async () => await ResetFilter());
             ReloadBooksCommand = new RelayCommand(async () => await ReloadBooks());
+            DeleteBookCommand = new RelayCommand(async (id) => await DeleteBookFromCollection((int)id));
 
             _ = LoadDataAsync();
         }
@@ -206,6 +202,28 @@ namespace Frontend.ViewModels
             SelectedPublisher = null;
 
             await ApplyFilters();
+        }
+
+        private async Task DeleteBookFromCollection(int bookId)
+        {
+            try
+            {
+                await _service.DeleteBook(bookId);
+
+                BookViewModel book = Books.First(b => b.Id == bookId);
+                if (book != null)
+                {
+                    await Application.Current.Dispatcher.InvokeAsync(() =>
+                    {
+                        Books.Remove(book);
+                        AllBooks.Remove(book);
+                    });
+                }
+            }
+            catch (Exception)
+            {
+                ShowError($"An error occurred while deleting the book, please try again later!");
+            }
         }
 
         private async Task ReloadBooks()
